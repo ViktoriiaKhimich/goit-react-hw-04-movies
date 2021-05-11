@@ -12,55 +12,68 @@ import styles from './SingleMoviePage.module.css'
 class SingleMoviePage extends Component {
     state = {
         movie: [],
-        loading: false,
-        error: null,
+        from: '/movie/search'
     }
 
     componentDidMount() {
-        this.setState({
-            loading: true,
-        })
-    }
-
-    componentDidUpdate() {
-        const { loading } = this.state;
-
-        if (loading) {
-            const { movieId } = this.props.match.params;
-            const response = fetchOneFilm(movieId);
-
-            response
-                .then(({ data }) => {
-                    this.setState({
-                        movie: data,
-                        loading: false
-                    })
+        const { movieId } = this.props.match.params;
+        const response = fetchOneFilm(movieId);
+        response
+            .then(({ data }) => {
+                this.setState({
+                    movie: data,
                 })
-                .catch((error) => {
-                    this.setState({
-                        loading: false,
-                        error
-                    })
-                })
+            })
+
+        const { state } = this.props.location;
+        if (state) {
+            const { pathname, search } = state.from;
+            this.setState({
+                from: `${pathname}${search}`
+            })
         }
     }
 
-    handleGoBack = () => {
-        const { location, history } = this.props;
-        history.push(location?.state?.from || '/')
-    }
+    // componentDidUpdate() {
+    //     const { loading } = this.state;
+
+    //     if (loading) {
+    //         const { movieId } = this.props.match.params;
+    //         const response = fetchOneFilm(movieId);
+
+    //         response
+    //             .then(({ data }) => {
+    //                 this.setState({
+    //                     movie: data,
+    //                     loading: false
+    //                 })
+    //             })
+    //             .catch((error) => {
+    //                 this.setState({
+    //                     loading: false,
+    //                     error
+    //                 })
+    //             })
+    //     }
+    // }
+
+    // handleGoBack = () => {
+    //     const { location, history } = this.props;
+    //     history.push(location?.state?.from || '/')
+    // }
 
     render() {
-        const { movie, error, loading } = this.state;
+        const { movie, from } = this.state;
         const { id } = this.state.movie;
 
         return (
             <>
-                <Button className={styles.backBtn} onClick={this.handleGoBack}>Go back</Button>
+                <NavLink to={from}>
+                    <Button className={styles.backBtn}>Go back</Button>
+                </NavLink>
                 <div className={styles.movieCard}>
-                    {loading && <p>Loading...</p>}
-                    {error && <p>Sorry, there must be some problem on a server</p>}
-                    {!loading && !error && <MovieDetails movie={movie} />}
+
+                    <MovieDetails movie={movie} />
 
                     <div>
                         <ul>

@@ -46,7 +46,6 @@ class MoviesSearchList extends Component {
 
         const { loading, movies, error } = this.state;
 
-
         return (
             <>
                 {loading && <p>Loading...</p>}
